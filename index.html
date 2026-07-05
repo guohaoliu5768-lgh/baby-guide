@@ -189,7 +189,16 @@ h2.sec{font-size:17px;margin:4px 0 12px}
     </div>
     <div id="ob-form-born" class="hidden">
       <label class="f">宝宝生日</label>
-      <input class="f" type="date" // ===== 孕期数据：40周逐周指导 =====
+      <input class="f" type="date" id="ob-birth">
+      <label class="f">性别（用于生长参考范围）</label>
+      <select class="f" id="ob-sex"><option value="boy">男宝</option><option value="girl">女宝</option></select>
+    </div>
+    <button class="btn" onclick="obSave()">开始使用</button>
+  </div>
+</div>
+
+<script>
+// ===== 孕期数据：40周逐周指导 =====
 const PREG = [
 {w:1,baby:"本周从末次月经第一天算起，宝宝还未真正形成，身体在为排卵做准备。",mom:"处于月经期，和平时无异。开始补充叶酸（0.4mg/天）是关键。",tip:"备孕期夫妻双方都应戒烟戒酒，规律作息。",dad:["和妻子一起戒烟戒酒，二手烟同样影响备孕","陪妻子一起补充叶酸的同时，自己也可补充锌和维生素","记录妻子的月经周期，帮助推算排卵期"]},
 {w:2,baby:"卵巢中的卵泡正在成熟，本周末可能排卵，受孕窗口临近。",mom:"排卵期临近，白带增多透亮。保持好心情有助受孕。",tip:"排卵日前后隔天同房受孕率最高，不要过度紧张。",dad:["保持规律作息、适度运动，提高精子质量","主动分担家务，让妻子放松心情","避免蒸桑拿、泡温泉（高温影响精子）"]},
