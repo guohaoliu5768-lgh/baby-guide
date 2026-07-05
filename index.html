@@ -163,6 +163,14 @@ h2.sec{font-size:17px;margin:4px 0 12px}
     <div class="card"><h3>历史记录</h3><div id="rec-list"></div></div>
   </div>
 
+  <div id="view-kb" class="view">
+    <h2 class="sec">📚 育儿知识库</h2>
+    <p style="font-size:12.5px;color:var(--muted);margin-bottom:10px">刷到好的育儿帖子？把链接或内容发给Claude，总结后会收录到这里，刷新即可查看。</p>
+    <input class="f" type="search" id="kb-q" placeholder="🔍 搜索关键词，如：辅食、睡眠…" oninput="renderKB()">
+    <div class="chips" id="kb-cats" style="margin-top:12px"></div>
+    <div id="kb-list"></div>
+  </div>
+
   <div class="disclaimer">内容依据孕产妇及儿童保健常规整理，仅供参考，不能替代医生诊断与建议。如有异常请及时就医。</div>
 </main>
 
@@ -172,6 +180,7 @@ h2.sec{font-size:17px;margin:4px 0 12px}
   <button data-v="baby"><span class="i">👶</span>育儿</button>
   <button data-v="vax"><span class="i">💉</span>疫苗</button>
   <button data-v="rec"><span class="i">📏</span>记录</button>
+  <button data-v="kb"><span class="i">📚</span>知识</button>
 </nav>
 </div>
 
@@ -197,6 +206,7 @@ h2.sec{font-size:17px;margin:4px 0 12px}
   </div>
 </div>
 
+<script src="knowledge.js"></script>
 <script>
 // ===== 孕期数据：40周逐周指导 =====
 const PREG = [
@@ -853,8 +863,34 @@ function openOnboard(){
   document.getElementById('onboard').classList.remove('hidden');
 }
 
+// ===== 知识库 =====
+let kbCat='全部';
+function renderKB(){
+  const listEl=document.getElementById('kb-list');
+  const data=(typeof KB!=='undefined')?KB:[];
+  const cats=['全部'].concat(Array.from(new Set(data.map(x=>x.cat))));
+  let ch='';
+  cats.forEach(c=>{ch+='<button class="chip'+(c===kbCat?' on':'')+'" onclick="kbPick(\''+c+'\')">'+esc(c)+'</button>'});
+  document.getElementById('kb-cats').innerHTML=ch;
+  const q=(document.getElementById('kb-q').value||'').trim().toLowerCase();
+  let items=data.filter(x=>(kbCat==='全部'||x.cat===kbCat));
+  if(q)items=items.filter(x=>(x.t+x.points.join('')+(x.tip||'')+x.cat).toLowerCase().includes(q));
+  if(!items.length){listEl.innerHTML='<div class="empty">'+(data.length?'没有找到相关条目，换个关键词试试':'知识库暂时是空的')+'</div>';return}
+  let h='';
+  items.slice().reverse().forEach(x=>{
+    h+='<div class="card"><h3>'+esc(x.t)+'</h3><p style="margin:2px 0 8px"><span class="tag pink">'+esc(x.cat)+'</span><span class="tag blue">'+esc(x.src)+'</span><span class="tag green">'+esc(x.date)+'</span></p><ul>';
+    x.points.forEach(p=>{h+='<li>'+esc(p)+'</li>'});
+    h+='</ul>';
+    if(x.tip)h+='<div class="tip">⚠️ '+esc(x.tip)+'</div>';
+    if(x.url)h+='<p style="margin-top:8px"><a href="'+esc(x.url)+'" target="_blank" rel="noopener" style="color:var(--dad);font-size:13px">查看原帖 →</a></p>';
+    h+='</div>';
+  });
+  listEl.innerHTML=h;
+}
+function kbPick(c){kbCat=c;renderKB()}
+
 // ===== 启动 =====
-function renderAll(){renderHome();renderPregWeek();renderCheckups();renderBag();renderDiet();renderBaby();renderVax();renderRec()}
+function renderAll(){renderHome();renderPregWeek();renderCheckups();renderBag();renderDiet();renderBaby();renderVax();renderRec();renderKB()}
 document.getElementById('rec-date').value=new Date().toISOString().slice(0,10);
 if(!profile){document.getElementById('onboard').classList.remove('hidden')}
 renderAll();
