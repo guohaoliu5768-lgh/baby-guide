@@ -100,6 +100,10 @@ nav button.on{color:var(--primary-deep);font-weight:600}
 .week-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .week-nav button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:6px 14px;font-size:14px;cursor:pointer;color:var(--text)}
 .week-nav .cur{font-size:16px;font-weight:700;color:var(--primary-deep)}
+.meal{padding:9px 0;border-bottom:1px solid var(--line)}
+.meal:last-child{border-bottom:none}
+.meal b{font-size:13px;color:var(--primary-deep)}
+.meal p{font-size:13.5px;line-height:1.7;color:#5a504b;margin-top:2px}
 .disclaimer{font-size:11.5px;color:#b3a89f;text-align:center;padding:18px 20px 6px;line-height:1.6}
 .empty{text-align:center;color:var(--muted);font-size:13px;padding:24px 0}
 h2.sec{font-size:17px;margin:4px 0 12px}
@@ -119,12 +123,14 @@ h2.sec{font-size:17px;margin:4px 0 12px}
     <h2 class="sec">🤰 孕期专区</h2>
     <div class="seg" id="preg-seg">
       <button class="on" data-p="week">逐周指导</button>
-      <button data-p="checkup">产检时间表</button>
+      <button data-p="checkup">产检</button>
       <button data-p="bag">待产包</button>
+      <button data-p="diet">每日食谱</button>
     </div>
     <div id="preg-week"></div>
     <div id="preg-checkup" class="hidden"></div>
     <div id="preg-bag" class="hidden"></div>
+    <div id="preg-diet" class="hidden"></div>
   </div>
 
   <div id="view-baby" class="view">
@@ -183,16 +189,7 @@ h2.sec{font-size:17px;margin:4px 0 12px}
     </div>
     <div id="ob-form-born" class="hidden">
       <label class="f">宝宝生日</label>
-      <input class="f" type="date" id="ob-birth">
-      <label class="f">性别（用于生长参考范围）</label>
-      <select class="f" id="ob-sex"><option value="boy">男宝</option><option value="girl">女宝</option></select>
-    </div>
-    <button class="btn" onclick="obSave()">开始使用</button>
-  </div>
-</div>
-
-<script>
-// ===== 孕期数据：40周逐周指导 =====
+      <input class="f" type="date" // ===== 孕期数据：40周逐周指导 =====
 const PREG = [
 {w:1,baby:"本周从末次月经第一天算起，宝宝还未真正形成，身体在为排卵做准备。",mom:"处于月经期，和平时无异。开始补充叶酸（0.4mg/天）是关键。",tip:"备孕期夫妻双方都应戒烟戒酒，规律作息。",dad:["和妻子一起戒烟戒酒，二手烟同样影响备孕","陪妻子一起补充叶酸的同时，自己也可补充锌和维生素","记录妻子的月经周期，帮助推算排卵期"]},
 {w:2,baby:"卵巢中的卵泡正在成熟，本周末可能排卵，受孕窗口临近。",mom:"排卵期临近，白带增多透亮。保持好心情有助受孕。",tip:"排卵日前后隔天同房受孕率最高，不要过度紧张。",dad:["保持规律作息、适度运动，提高精子质量","主动分担家务，让妻子放松心情","避免蒸桑拿、泡温泉（高温影响精子）"]},
@@ -431,6 +428,126 @@ const GROWTH = [
 [60,14.1,24.2, 100.7,123.9, 13.7,24.9, 99.9,123.7],
 [72,15.9,27.1, 106.1,130.7, 15.3,27.8, 104.9,130.5]
 ];
+// ===== 孕期每日三餐食谱（按孕早/中/晚期，一周7天循环）=====
+const DIET = [
+{ph:"early",label:"孕早期 (1-12周)",
+ note:"热量无需额外增加，重点：叶酸+清淡易消化，应对孕吐少食多餐。每天主食200-250g、蔬菜300-500g、水果200-350g、蛋1个、奶300ml。",
+ days:[
+ {d:"周一",
+  b:"小米南瓜粥（小米40g+南瓜100g，加水煮30分钟）｜水煮蛋1个（55g）｜凉拌黄瓜（黄瓜100g切条，蒜末香油拌）",
+  l:"米饭（大米100g）｜清蒸鲈鱼（鲈鱼150g，姜丝葱段蒸10分钟淋生抽）｜蒜蓉西兰花（西兰花200g焯水，蒜末少油快炒）",
+  dn:"番茄鸡蛋面（面条80g+番茄150g+鸡蛋1个，番茄炒软加水煮面）｜清炒菠菜（菠菜150g焯水后快炒）",
+  s:"上午：苹果1个（200g）｜下午：无糖酸奶150g+苏打饼干2片（孕吐时床头常备）"},
+ {d:"周二",
+  b:"全麦面包2片（70g）｜牛奶250ml｜煮鸡蛋1个｜小番茄100g",
+  l:"杂粮饭（大米70g+糙米30g）｜白灼虾（基围虾120g，沸水煮2分钟蘸姜醋）｜清炒油麦菜（油麦菜200g）",
+  dn:"瘦肉青菜粥（大米60g+瘦猪肉末50g+青菜100g，肉末焯水后同煮）｜蒸山药（山药100g蒸15分钟）",
+  s:"上午：香蕉1根（120g）｜下午：原味坚果15g（核桃2个或杏仁8颗）"},
+ {d:"周三",
+  b:"蔬菜瘦肉包1个（100g）｜豆浆250ml（无糖）｜拌木耳（泡发木耳50g焯水，醋+生抽拌）",
+  l:"米饭（大米100g）｜番茄炖牛腩（牛腩100g+番茄200g，牛腩焯水后小火炖60分钟）｜清炒小白菜（小白菜200g）",
+  dn:"三鲜馄饨（馄饨皮80g+猪肉虾仁馅100g，煮8分钟加紫菜虾皮汤）",
+  s:"上午：橙子1个（180g，维C促铁吸收）｜下午：牛奶200ml"},
+ {d:"周四",
+  b:"燕麦牛奶粥（燕麦40g+牛奶250ml煮5分钟）｜水煮蛋1个｜蒸紫薯（紫薯80g）",
+  l:"米饭（大米100g）｜香菇蒸鸡（鸡腿肉120g+干香菇4朵泡发，蚝油腌20分钟蒸15分钟）｜清炒莴笋丝（莴笋200g）",
+  dn:"鲫鱼豆腐汤（鲫鱼150g煎后加水+豆腐100g炖20分钟）｜米饭（大米70g）｜焯拌秋葵（秋葵100g焯2分钟）",
+  s:"上午：猕猴桃1个（100g）｜下午：无糖酸奶150g"},
+ {d:"周五",
+  b:"菜肉馄饨（10个约150g，清汤少油）｜煮玉米半根（100g）",
+  l:"杂粮饭（大米70g+小米30g）｜青椒炒猪肝（猪肝80g焯水+青椒100g快炒，每周1-2次补铁）｜蒜蓉苋菜（苋菜200g）",
+  dn:"虾仁蒸蛋（鸡蛋2个+虾仁50g，1:1.5温水蒸12分钟）｜米饭（大米70g）｜上汤娃娃菜（娃娃菜200g）",
+  s:"上午：葡萄150g｜下午：全麦面包1片+牛奶200ml"},
+ {d:"周六",
+  b:"红枣小米粥（小米40g+红枣3颗）｜茶叶蛋1个｜凉拌豆腐丝（豆腐丝50g）",
+  l:"米饭（大米100g）｜清蒸鳕鱼（鳕鱼150g蒸8分钟，补DHA）｜白灼菜心（菜心200g）",
+  dn:"鸡丝荞麦面（荞麦面80g+鸡胸肉丝80g+黄瓜丝50g，鸡胸煮熟撕丝拌面）",
+  s:"上午：火龙果150g（防便秘）｜下午：原味坚果15g"},
+ {d:"周日",
+  b:"鸡蛋灌饼（面饼80g+鸡蛋1个，少油煎）｜牛奶250ml｜生菜50g",
+  l:"米饭（大米100g）｜冬瓜排骨汤（排骨100g焯水+冬瓜150g炖40分钟）｜清炒四季豆（四季豆150g务必炒熟）",
+  dn:"蔬菜鸡蛋饼（面粉60g+鸡蛋1个+胡萝卜丝西葫芦丝100g，摊薄饼）｜绿豆百合粥（绿豆20g+大米40g）",
+  s:"上午：梨1个（180g）｜下午：无糖酸奶150g+蓝莓50g"}
+]},
+{ph:"mid",label:"孕中期 (13-27周)",
+ note:"每天比孕前多约300千卡，重点：钙1000mg+铁+优质蛋白。每天主食250-300g（1/3粗粮）、肉禽鱼150-200g、蔬菜400-500g、奶300-500ml、每周2-3次鱼（1次深海鱼）。",
+ days:[
+ {d:"周一",
+  b:"牛奶250ml｜全麦三明治（全麦面包2片+鸡蛋1个+生菜番茄80g）｜核桃2个",
+  l:"杂粮饭（大米80g+燕麦米40g）｜红烧带鱼（带鱼150g煎后加葱姜生抽焖10分钟）｜蒜蓉空心菜（空心菜250g）｜紫菜蛋花汤",
+  dn:"米饭（大米100g）｜芹菜炒牛肉丝（牛肉100g上浆滑炒+芹菜150g）｜虾皮冬瓜（冬瓜200g+虾皮5g）",
+  s:"上午：苹果1个+牛奶200ml｜下午：蒸红薯100g+无糖酸奶150g"},
+ {d:"周二",
+  b:"瘦肉菜粥（大米50g+瘦肉50g+青菜80g）｜水煮蛋1个｜凉拌海带丝（海带丝80g，补碘）",
+  l:"米饭（大米120g）｜黄豆焖猪蹄去皮改瘦排（排骨120g+黄豆30g炖50分钟）｜清炒茼蒿（茼蒿250g）",
+  dn:"三文鱼炒饭（米饭150g+三文鱼80g+豌豆胡萝卜粒80g+鸡蛋1个，三文鱼煎熟拆块同炒，补DHA）｜番茄豆腐汤（番茄100g+豆腐100g）",
+  s:"上午：橙子1个｜下午：牛奶250ml+原味坚果15g"},
+ {d:"周三",
+  b:"豆沙包1个（80g）｜牛奶250ml｜煮鸡蛋1个｜拌胡萝卜丝（胡萝卜80g焯水）",
+  l:"荞麦面（荞麦面100g）｜大虾炒时蔬（基围虾150g+荷兰豆100g+彩椒50g）｜拌菠菜（菠菜150g焯水+芝麻酱10g，补钙铁）",
+  dn:"米饭（大米100g）｜山药炖鸡汤（鸡腿150g+山药150g炖40分钟）｜蚝油生菜（生菜200g）",
+  s:"上午：猕猴桃1个｜下午：无糖酸奶150g+全麦饼干2片"},
+ {d:"周四",
+  b:"燕麦粥（燕麦50g+牛奶250ml）｜水煮蛋1个｜蒸南瓜100g",
+  l:"米饭（大米120g）｜菠萝咕咾肉改良版（瘦猪肉120g少糖版+彩椒100g）｜上汤苋菜（苋菜250g，含钙高）",
+  dn:"牛肉面（面条100g+酱牛肉80g切片+小油菜100g）｜拌黄瓜（黄瓜100g）",
+  s:"上午：香蕉1根｜下午：牛奶250ml+蒸玉米半根"},
+ {d:"周五",
+  b:"鲜肉小馄饨（12个约180g）｜煮鹌鹑蛋4个｜橙子半个",
+  l:"杂粮饭（大米80g+黑米40g）｜清蒸鲈鱼（鲈鱼180g）｜蒜蓉西兰花（西兰花250g）｜冬瓜虾米汤",
+  dn:"米饭（大米100g）｜青椒炒猪肝（猪肝100g+青椒100g，本周补铁餐）｜清炒豆芽（绿豆芽150g）",
+  s:"上午：葡萄150g｜下午：无糖酸奶150g+核桃2个"},
+ {d:"周六",
+  b:"牛奶250ml｜芝麻酱花卷1个（80g，补钙）｜煮鸡蛋1个｜小番茄100g",
+  l:"米饭（大米120g）｜栗子焖鸡（鸡腿肉150g+板栗80g焖30分钟）｜清炒芥蓝（芥蓝250g）",
+  dn:"海鲜乌冬面（乌冬面150g+虾仁50g+花蛤100g+青菜100g，花蛤吐沙后煮开口）",
+  s:"上午：苹果1个｜下午：牛奶250ml+蒸紫薯80g"},
+ {d:"周日",
+  b:"皮蛋瘦肉粥改瘦肉粥（大米50g+瘦肉60g）｜蒸蛋羹1份（鸡蛋1个）｜凉拌木耳（木耳50g）",
+  l:"米饭（大米120g）｜番茄牛腩（牛腩120g+番茄200g炖60分钟，补铁）｜白灼秋葵（秋葵150g）",
+  dn:"三鲜水饺（水饺15个约250g，猪肉虾仁韭菜馅）｜小米粥（小米30g）｜拌豆腐（内酯豆腐150g）",
+  s:"上午：火龙果150g｜下午：无糖酸奶150g+杏仁8颗"}
+]},
+{ph:"late",label:"孕晚期 (28-40周)",
+ note:"每天比孕前多约450千卡，但要控体重控血糖：少食多餐（3正餐+2-3加餐）、主食粗粮占1/3、晚餐清淡、睡前2小时不进食。继续补钙补铁+每周深海鱼。",
+ days:[
+ {d:"周一",
+  b:"杂粮粥（燕麦30g+小米20g）｜水煮蛋1个｜凉拌西兰花（西兰花100g）｜牛奶200ml",
+  l:"糙米饭（大米80g+糙米40g）｜清蒸鲈鱼（鲈鱼180g）｜蒜蓉苋菜（苋菜250g）｜萝卜丝虾皮汤",
+  dn:"二米饭（大米60g+小米30g）｜白灼虾（虾120g）｜清炒小白菜（小白菜200g）",
+  s:"上午：苹果1个｜下午：无糖酸奶150g+坚果15g｜晚：牛奶200ml（睡前2小时）"},
+ {d:"周二",
+  b:"全麦面包2片｜牛奶250ml｜煮鸡蛋1个｜黄瓜条100g",
+  l:"杂粮饭（大米80g+藜麦30g）｜芹菜炒牛肉（牛肉120g+芹菜150g，补铁）｜白灼菜心（菜心200g）",
+  dn:"荞麦面（荞麦面90g）｜香菇蒸鸡（鸡腿100g+香菇3朵）｜焯拌菠菜（菠菜150g）",
+  s:"上午：柚子2瓣（150g，控糖优选）｜下午：蒸玉米半根+酸奶150g｜晚：牛奶200ml"},
+ {d:"周三",
+  b:"瘦肉青菜粥（大米40g+燕麦20g+瘦肉50g+青菜80g）｜水煮蛋1个",
+  l:"米饭（大米100g）｜三文鱼西兰花（三文鱼130g煎6分钟+西兰花200g，DHA冲刺期）｜番茄豆腐汤",
+  dn:"杂粮馒头1个（80g）｜冬瓜丸子汤（瘦猪肉丸80g+冬瓜200g）｜清炒油麦菜（油麦菜200g）",
+  s:"上午：草莓150g｜下午：无糖酸奶150g+核桃2个｜晚：牛奶200ml"},
+ {d:"周四",
+  b:"蔬菜鸡蛋饼（面粉50g+鸡蛋1个+西葫芦丝100g）｜豆浆250ml",
+  l:"糙米饭（大米80g+糙米40g）｜青椒炒猪肝（猪肝80g+青椒100g，孕晚期防贫血）｜上汤娃娃菜（娃娃菜250g）",
+  dn:"米饭（大米80g）｜清蒸鳕鱼（鳕鱼150g）｜蒜蓉空心菜（空心菜200g）",
+  s:"上午：猕猴桃1个｜下午：全麦饼干2片+牛奶200ml｜晚：酸奶150g"},
+ {d:"周五",
+  b:"燕麦牛奶粥（燕麦40g+牛奶250ml）｜煮鸡蛋1个｜小番茄100g",
+  l:"米饭（大米100g）｜黄焖鸡块（鸡腿肉130g+土豆100g，土豆算主食故米饭减量）｜清炒芥蓝（芥蓝250g）",
+  dn:"三鲜馄饨（12个约200g）｜凉拌海带丝（海带80g）",
+  s:"上午：梨半个（100g）｜下午：蒸红薯80g+酸奶150g｜晚：牛奶200ml"},
+ {d:"周六",
+  b:"芝麻酱全麦花卷1个（80g）｜牛奶250ml｜水煮蛋1个｜拌黄瓜100g",
+  l:"杂粮饭（大米80g+黑米40g）｜番茄炖牛腩（牛腩120g+番茄200g）｜白灼秋葵（秋葵150g）",
+  dn:"小米粥（小米40g）｜虾仁蒸蛋（鸡蛋1个+虾仁50g）｜清炒茼蒿（茼蒿200g）",
+  s:"上午：蓝莓100g｜下午：坚果15g+酸奶150g｜晚：牛奶200ml"},
+ {d:"周日",
+  b:"菜肉包1个（100g）｜无糖豆浆250ml｜煮鹌鹑蛋4个",
+  l:"米饭（大米100g）｜鲫鱼豆腐汤（鲫鱼180g+豆腐150g，临产前汤水储备）｜蒜蓉西兰花（西兰花200g）",
+  dn:"二米饭（大米60g+小米30g）｜白切鸡（鸡腿120g煮20分钟蘸姜葱）｜焯拌菠菜（菠菜200g）",
+  s:"上午：橙子1个｜下午：全麦面包1片+牛奶200ml｜晚：酸奶150g"}
+]}
+];
 // ===== 工具 =====
 function lsGet(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def}catch(e){return def}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
@@ -486,7 +603,17 @@ function renderHome(){
     h+='<div class="card"><h3>👶 宝宝本周</h3><p>'+esc(d.baby)+'</p></div>';
     h+='<div class="card"><h3>🤰 妈妈本周</h3><p>'+esc(d.mom)+'</p><div class="tip">💡 '+esc(d.tip)+'</div></div>';
     h+=dadCard(d.dad,'pw'+w,'');
-    const next=CHECKUPS.find(c=>{const m=c.t.match(/(\d+)/);return m&&parseInt(m[1])>=w});
+    // 今日餐单
+    const ph=w<=12?'early':(w<=27?'mid':'late');
+    const dt=DIET.find(x=>x.ph===ph);
+    const di=(new Date().getDay()+6)%7; // 周一=0
+    const day=dt.days[di];
+    h+='<div class="card"><h3>🍽️ 今日餐单 <span class="tag pink">'+esc(dt.label)+'</span><span class="tag green">'+esc(day.d)+'</span></h3>'
+      +'<div class="meal"><b>早餐</b><p>'+esc(day.b)+'</p></div>'
+      +'<div class="meal"><b>午餐</b><p>'+esc(day.l)+'</p></div>'
+      +'<div class="meal"><b>晚餐</b><p>'+esc(day.dn)+'</p></div>'
+      +'<div class="meal"><b>加餐</b><p>'+esc(day.s)+'</p></div>'
+      +'<div class="dad-inline"><b>👨 爸爸：</b><ul><li>按餐单采买食材，今天至少下厨一顿</li></ul></div></div>';
     const cur=CHECKUPS.filter(c=>{const m=c.t.match(/孕(\d+)-(\d+)/);return m&&w>=+m[1]&&w<=+m[2]});
     if(cur.length){
       h+='<div class="card"><div class="next-card"><div class="icon">🏥</div><div><div class="t">近期产检：'+esc(cur[0].n)+'</div><div class="d">'+esc(cur[0].t)+' · '+esc(cur[0].d)+'</div></div></div><div class="dad-inline"><b>👨 爸爸：</b><ul><li>'+esc(cur[0].dad)+'</li></ul></div></div>';
@@ -551,6 +678,32 @@ function bagToggle(k){
   done=done.includes(k)?done.filter(x=>x!==k):done.concat(k);
   lsSet('yb_bag',done); renderBag();
 }
+
+// ===== 每日食谱 =====
+let curPh=null;
+function renderDiet(){
+  if(curPh===null){
+    curPh='mid';
+    if(profile&&profile.mode==='preg'){const w=pregWeek();curPh=w<=12?'early':(w<=27?'mid':'late')}
+  }
+  const dt=DIET.find(x=>x.ph===curPh);
+  let h='<div class="chips">';
+  DIET.forEach(x=>{h+='<button class="chip'+(x.ph===curPh?' on':'')+'" onclick="pickPh(\''+x.ph+'\')">'+esc(x.label)+'</button>'});
+  h+='</div>';
+  h+='<div class="tip" style="margin:0 0 12px">📌 '+esc(dt.note)+'</div>';
+  const di=(new Date().getDay()+6)%7;
+  dt.days.forEach((day,i)=>{
+    h+='<div class="card"><h3>'+esc(day.d)+(i===di?' <span class="tag green">今天</span>':'')+'</h3>'
+      +'<div class="meal"><b>🌅 早餐</b><p>'+esc(day.b)+'</p></div>'
+      +'<div class="meal"><b>☀️ 午餐</b><p>'+esc(day.l)+'</p></div>'
+      +'<div class="meal"><b>🌙 晚餐</b><p>'+esc(day.dn)+'</p></div>'
+      +'<div class="meal"><b>🍎 加餐</b><p>'+esc(day.s)+'</p></div></div>';
+  });
+  h+='<div class="dad-inline"><b>👨 爸爸任务：</b><ul><li>每周按食谱列采购清单，周末一次买齐+工作日补新鲜菜</li><li>每天至少负责一顿饭（早餐最容易上手）</li><li>妻子孕吐/胃口差时灵活替换同类食材，别强求</li></ul></div>';
+  h+='<p style="font-size:11.5px;color:#b3a89f;margin-top:10px;line-height:1.6">食谱为通用参考（普通体重单胎），有妊娠期糖尿病、高血压或过敏者请按医生/营养师方案调整。</p>';
+  document.getElementById('preg-diet').innerHTML=h;
+}
+function pickPh(p){curPh=p;renderDiet()}
 
 // ===== 育儿tab =====
 let curSeg='y1', curStage=null;
@@ -649,7 +802,7 @@ document.getElementById('nav').addEventListener('click',e=>{
 document.getElementById('preg-seg').addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b)return;
   document.querySelectorAll('#preg-seg button').forEach(x=>x.classList.toggle('on',x===b));
-  ['week','checkup','bag'].forEach(p=>document.getElementById('preg-'+p).classList.toggle('hidden',p!==b.dataset.p));
+  ['week','checkup','bag','diet'].forEach(p=>document.getElementById('preg-'+p).classList.toggle('hidden',p!==b.dataset.p));
 });
 document.getElementById('baby-seg').addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b)return;
@@ -679,7 +832,7 @@ function obSave(){
   }
   lsSet('yb_profile',profile);
   document.getElementById('onboard').classList.add('hidden');
-  curWeek=null; curStage=null;
+  curWeek=null; curStage=null; curPh=null;
   renderAll();
 }
 function openOnboard(){
@@ -692,10 +845,11 @@ function openOnboard(){
 }
 
 // ===== 启动 =====
-function renderAll(){renderHome();renderPregWeek();renderCheckups();renderBag();renderBaby();renderVax();renderRec()}
+function renderAll(){renderHome();renderPregWeek();renderCheckups();renderBag();renderDiet();renderBaby();renderVax();renderRec()}
 document.getElementById('rec-date').value=new Date().toISOString().slice(0,10);
 if(!profile){document.getElementById('onboard').classList.remove('hidden')}
 renderAll();
+// v1.1 diet module
 </script>
 </body>
 </html>
