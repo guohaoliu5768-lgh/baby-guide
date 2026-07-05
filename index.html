@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>育儿伴侣 · 从怀孕到6岁</title>
+<style>
+:root{
+  --primary:#f2777a; --primary-soft:#fdeeee; --primary-deep:#d95a5e;
+  --dad:#2f6fed; --dad-soft:#e8f0fe; --dad-deep:#1d4fb8;
+  --bg:#faf6f1; --card:#ffffff; --text:#3a3230; --muted:#8d817b;
+  --green:#3aa876; --green-soft:#e6f5ee; --amber:#e8a33d; --amber-soft:#fdf3e2;
+  --line:#f0e8e2; --radius:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#e9e2da;color:var(--text);display:flex;justify-content:center;min-height:100vh}
+.phone{width:100%;max-width:430px;background:var(--bg);min-height:100vh;display:flex;flex-direction:column;position:relative;box-shadow:0 0 40px rgba(0,0,0,.12)}
+main{flex:1;overflow-y:auto;padding:16px 16px 90px}
+h1{font-size:20px}
+.view{display:none}.view.active{display:block}
+/* header */
+.appbar{display:flex;align-items:center;justify-content:space-between;padding:4px 2px 14px}
+.appbar .logo{font-size:20px;font-weight:700;color:var(--primary-deep)}
+.appbar .gear{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)}
+/* cards */
+.card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(90,60,40,.05);border:1px solid var(--line)}
+.card h3{font-size:15px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.card p,.card li{font-size:14px;line-height:1.7;color:#5a504b}
+.card ul{padding-left:18px}
+.stage-card{background:linear-gradient(135deg,#f2777a,#e8938c);color:#fff;border:none}
+.stage-card .big{font-size:26px;font-weight:700;margin:4px 0}
+.stage-card p{color:rgba(255,255,255,.92)}
+.stage-card .sub{font-size:13px;opacity:.9}
+/* dad card —— 重点突出 */
+.dad-card{background:linear-gradient(135deg,#2f6fed,#4d86f5);color:#fff;border:none;position:relative;overflow:hidden}
+.dad-card::after{content:"👨‍🍼";position:absolute;right:-6px;bottom:-14px;font-size:64px;opacity:.18}
+.dad-card h3{color:#fff;font-size:16px}
+.dad-card .badge{background:rgba(255,255,255,.25);border-radius:20px;padding:2px 10px;font-size:11px}
+.dad-task{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.18);font-size:14px;line-height:1.6;color:#fff;cursor:pointer}
+.dad-task:last-child{border-bottom:none}
+.dad-task input{margin-top:4px;accent-color:#fff;width:16px;height:16px;flex:none}
+.dad-task.done span{opacity:.55;text-decoration:line-through}
+.dad-inline{background:var(--dad-soft);border-left:4px solid var(--dad);border-radius:10px;padding:10px 12px;margin-top:10px}
+.dad-inline b{color:var(--dad-deep);font-size:13px}
+.dad-inline ul{padding-left:16px;margin-top:4px}
+.dad-inline li{font-size:13.5px;color:#33528f}
+/* tags & misc */
+.tag{display:inline-block;font-size:11px;padding:2px 9px;border-radius:20px;margin-right:6px}
+.tag.pink{background:var(--primary-soft);color:var(--primary-deep)}
+.tag.blue{background:var(--dad-soft);color:var(--dad-deep)}
+.tag.green{background:var(--green-soft);color:var(--green)}
+.tag.amber{background:var(--amber-soft);color:var(--amber)}
+.tip{background:var(--amber-soft);border-radius:10px;padding:10px 12px;font-size:13px;color:#8a6420;margin-top:10px;line-height:1.6}
+.next-card{display:flex;gap:12px;align-items:center}
+.next-card .icon{font-size:26px}
+.next-card .t{font-size:14px;font-weight:600}
+.next-card .d{font-size:12.5px;color:var(--muted);margin-top:2px}
+/* segments */
+.seg{display:flex;background:#efe7e0;border-radius:12px;padding:3px;margin-bottom:14px}
+.seg button{flex:1;border:none;background:none;padding:8px 2px;font-size:13px;border-radius:10px;color:var(--muted);cursor:pointer;white-space:nowrap}
+.seg button.on{background:#fff;color:var(--text);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+/* chips */
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 14px;font-size:13px;color:var(--muted);cursor:pointer}
+.chip.on{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:600}
+/* checklist */
+.ck{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px;cursor:pointer}
+.ck:last-child{border-bottom:none}
+.ck input{margin-top:4px;accent-color:var(--primary);width:16px;height:16px;flex:none}
+.ck.done span{color:var(--muted);text-decoration:line-through}
+.ck .who{margin-left:auto;flex:none}
+/* vaccine */
+.vax-group{margin-bottom:6px}
+.vax-age{font-size:13px;font-weight:700;color:var(--primary-deep);margin:14px 0 6px}
+/* forms */
+label.f{display:block;font-size:13px;color:var(--muted);margin:12px 0 5px}
+input.f,select.f{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font-size:15px;background:#fff;color:var(--text)}
+.btn{width:100%;padding:13px;border:none;border-radius:12px;background:var(--primary);color:#fff;font-size:16px;font-weight:600;cursor:pointer;margin-top:18px}
+.btn.ghost{background:none;color:var(--muted);font-size:13px;padding:8px;margin-top:6px}
+.choice{display:flex;gap:10px;margin-top:14px}
+.choice button{flex:1;padding:18px 8px;border:2px solid var(--line);border-radius:14px;background:#fff;font-size:15px;cursor:pointer;color:var(--text)}
+.choice button.on{border-color:var(--primary);background:var(--primary-soft);font-weight:600}
+/* records */
+.rec-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.rec-row:last-child{border-bottom:none}
+.rec-row .d{color:var(--muted);font-size:12.5px}
+.ref{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.6}
+/* bottom nav */
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid var(--line);display:flex;padding:6px 0 max(8px,env(safe-area-inset-bottom));z-index:50}
+nav button{flex:1;border:none;background:none;font-size:11px;color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0}
+nav button .i{font-size:21px}
+nav button.on{color:var(--primary-deep);font-weight:600}
+/* onboarding */
+#onboard{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;justify-content:center}
+#onboard .inner{width:100%;max-width:430px;padding:60px 28px}
+#onboard h1{color:var(--primary-deep);font-size:26px}
+#onboard .sub{color:var(--muted);font-size:14px;margin-top:8px;line-height:1.7}
+.hidden{display:none!important}
+.week-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.week-nav button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:6px 14px;font-size:14px;cursor:pointer;color:var(--text)}
+.week-nav .cur{font-size:16px;font-weight:700;color:var(--primary-deep)}
+.disclaimer{font-size:11.5px;color:#b3a89f;text-align:center;padding:18px 20px 6px;line-height:1.6}
+.empty{text-align:center;color:var(--muted);font-size:13px;padding:24px 0}
+h2.sec{font-size:17px;margin:4px 0 12px}
+</style>
+</head>
+<body>
+<div class="phone">
+<main>
+  <div class="appbar">
+    <div class="logo">🍼 育儿伴侣</div>
+    <button class="gear" onclick="openOnboard()">⚙️</button>
+  </div>
+
+  <div id="view-home" class="view active"></div>
+
+  <div id="view-preg" class="view">
+    <h2 class="sec">🤰 孕期专区</h2>
+    <div class="seg" id="preg-seg">
+      <button class="on" data-p="week">逐周指导</button>
+      <button data-p="checkup">产检时间表</button>
+      <button data-p="bag">待产包</button>
+    </div>
+    <div id="preg-week"></div>
+    <div id="preg-checkup" class="hidden"></div>
+    <div id="preg-bag" class="hidden"></div>
+  </div>
+
+  <div id="view-baby" class="view">
+    <h2 class="sec">👶 育儿专区</h2>
+    <div class="seg" id="baby-seg">
+      <button class="on" data-b="y1">0-1岁</button>
+      <button data-b="y3">1-3岁</button>
+      <button data-b="y6">3-6岁</button>
+      <button data-b="care">常见问题</button>
+    </div>
+    <div id="baby-content"></div>
+  </div>
+
+  <div id="view-vax" class="view">
+    <h2 class="sec">💉 疫苗接种表</h2>
+    <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px">国家免疫规划（免费）疫苗，点击勾选已完成的接种。</p>
+    <div id="vax-list"></div>
+  </div>
+
+  <div id="view-rec" class="view">
+    <h2 class="sec">📏 成长记录</h2>
+    <div class="card">
+      <h3>添加记录</h3>
+      <label class="f">日期</label><input class="f" type="date" id="rec-date">
+      <label class="f">身高 (cm)</label><input class="f" type="number" step="0.1" id="rec-h" placeholder="如 75.5">
+      <label class="f">体重 (kg)</label><input class="f" type="number" step="0.01" id="rec-w" placeholder="如 9.6">
+      <button class="btn" onclick="addRec()">保存记录</button>
+    </div>
+    <div class="card"><h3>参考范围</h3><div id="rec-ref" class="ref"></div></div>
+    <div class="card"><h3>历史记录</h3><div id="rec-list"></div></div>
+  </div>
+
+  <div class="disclaimer">内容依据孕产妇及儿童保健常规整理，仅供参考，不能替代医生诊断与建议。如有异常请及时就医。</div>
+</main>
+
+<nav id="nav">
+  <button class="on" data-v="home"><span class="i">🏠</span>首页</button>
+  <button data-v="preg"><span class="i">🤰</span>孕期</button>
+  <button data-v="baby"><span class="i">👶</span>育儿</button>
+  <button data-v="vax"><span class="i">💉</span>疫苗</button>
+  <button data-v="rec"><span class="i">📏</span>记录</button>
+</nav>
+</div>
+
+<div id="onboard" class="hidden">
+  <div class="inner">
+    <h1>🍼 育儿伴侣</h1>
+    <p class="sub">从怀孕到宝宝6岁的全程指导，<b>爸爸的任务清单</b>重点标注。先告诉我你们现在的阶段：</p>
+    <div class="choice">
+      <button id="ob-preg" onclick="obPick('preg')">🤰<br>怀孕中</button>
+      <button id="ob-born" onclick="obPick('born')">👶<br>宝宝已出生</button>
+    </div>
+    <div id="ob-form-preg" class="hidden">
+      <label class="f">预产期</label>
+      <input class="f" type="date" id="ob-due">
+    </div>
+    <div id="ob-form-born" class="hidden">
+      <label class="f">宝宝生日</label>
+      <input class="f" type="date" id="ob-birth">
+      <label class="f">性别（用于生长参考范围）</label>
+      <select class="f" id="ob-sex"><option value="boy">男宝</option><option value="girl">女宝</option></select>
+    </div>
+    <button class="btn" onclick="obSave()">开始使用</button>
+  </div>
+</div>
+
+<script>
+// ===== 孕期数据：40周逐周指导 =====
+const PREG = [
+{w:1,baby:"本周从末次月经第一天算起，宝宝还未真正形成，身体在为排卵做准备。",mom:"处于月经期，和平时无异。开始补充叶酸（0.4mg/天）是关键。",tip:"备孕期夫妻双方都应戒烟戒酒，规律作息。",dad:["和妻子一起戒烟戒酒，二手烟同样影响备孕","陪妻子一起补充叶酸的同时，自己也可补充锌和维生素","记录妻子的月经周期，帮助推算排卵期"]},
+{w:2,baby:"卵巢中的卵泡正在成熟，本周末可能排卵，受孕窗口临近。",mom:"排卵期临近，白带增多透亮。保持好心情有助受孕。",tip:"排卵日前后隔天同房受孕率最高，不要过度紧张。",dad:["保持规律作息、适度运动，提高精子质量","主动分担家务，让妻子放松心情","避免蒸桑拿、泡温泉（高温影响精子）"]},
+{w:3,baby:"精卵结合！受精卵开始分裂，沿输卵管向子宫移动。",mom:"身体尚无感觉，但新生命已经启程。避免服药、照X光。",tip:"从现在起妻子用药需谨慎，任何药物先咨询医生。",dad:["提醒妻子避免接触烟酒、辐射和有毒化学品","家里大扫除、接触清洁剂的活由你来干","开始学习孕期知识，做有准备的爸爸"]},
+{w:4,baby:"胚胎着床于子宫内膜，仅0.2mm大小，胎盘和羊膜囊开始形成。",mom:"月经该来没来！可能有轻微着床出血或疲倦感。可用早孕试纸检测。",tip:"验出两条杠先别声张，1-2周后去医院抽血确认。",dad:["买早孕试纸，陪妻子一起见证结果","无论结果如何，给妻子稳定的情绪支持","开始记账，规划孕产育儿预算"]},
+{w:5,baby:"胚胎如芝麻大（约2mm），神经管开始发育，心脏雏形出现。",mom:"早孕反应可能开始：恶心、乏力、乳房胀痛、尿频。",tip:"神经管发育关键期，叶酸千万别断。",dad:["把家里的咖啡、酒收起来，别在妻子面前吃她闻了想吐的食物","预约医院首诊，查HCG和孕酮","妻子情绪波动大，多包容、多倾听、少讲道理"]},
+{w:6,baby:"胚胎约4-6mm，心脏开始跳动（B超可见胎心搏动）！",mom:"孕吐可能加重，闻到油烟就恶心。少食多餐，吃点苏打饼干。",tip:"孕6-8周B超确认宫内孕和胎心，排除宫外孕。",dad:["陪妻子做第一次B超，一起听胎心","接管厨房或安排外卖，让妻子远离油烟","在她床头备好饼干和温水，缓解晨起孕吐"]},
+{w:7,baby:"胚胎约1cm，像颗蓝莓。大脑快速发育，四肢芽出现。",mom:"孕吐高峰期，嗜睡明显。体重可能不增反降，别慌。",tip:"吐得完全吃不下、尿少时要就医（警惕妊娠剧吐）。",dad:["观察记录妻子孕吐情况，严重时果断陪她就医","下班早点回家，家务全包不是口号","给妻子准备酸味小零食（话梅、柠檬水）"]},
+{w:8,baby:"约1.6cm，手指脚趾开始分化，小尾巴逐渐消失。",mom:"子宫增大到拳头大，可能有轻微腹部抽痛，属正常牵拉感。",tip:"出现鲜红出血或剧烈腹痛需立即就医。",dad:["确认建档医院，了解建档要带的证件材料","帮妻子调整工作强度，需要时和她一起与领导沟通","睡前给妻子按摩肩颈（避开腰腹部穴位）"]},
+{w:9,baby:"约2.3cm，进入胎儿期！所有重要器官都已成形，开始小幅活动。",mom:"腰围渐粗，乳房继续增大。情绪易低落，激素在作怪。",tip:"可以开始换穿宽松衣物和舒适内衣。",dad:["陪妻子买孕妇内衣和平底鞋","每天安排20-30分钟散步，陪她一起走","把'辛苦了''你真棒'挂在嘴边，肯定她的付出"]},
+{w:10,baby:"约3cm，重4g。器官快速生长，胎盘即将接管营养供应。",mom:"孕吐开始缓一些。牙龈可能出血，注意口腔护理。",tip:"建档一般在孕6-13周完成，别拖过12周。",dad:["请假陪妻子去医院建档（流程长，跑腿排队你来）","整理双方身份证、医保卡、母子手册等材料","了解生育保险报销政策"]},
+{w:11,baby:"约4-6cm，头占身体一半。开始吞咽羊水，踢腿伸展。",mom:"体力逐渐恢复，食欲回升。开始控制体重增速。",tip:"NT检查（颈项透明层）在11-13周+6天之间做，需提前预约。",dad:["预约并陪同NT检查","一起制定孕期体重管理计划，别再劝'多吃点，一人吃两人补'","给宝宝拍下第一张B超照片，开始做成长相册"]},
+{w:12,baby:"约6cm，重14g。五官清晰，声带形成，反射发育。",mom:"流产风险大幅下降，可以对外官宣了！早孕反应明显减轻。",tip:"孕12周左右完成首次正式产检（建档大检查）。",dad:["和妻子商量官宣方式，一起告诉双方父母","首次产检项目多（抽血、尿检、心电图），全程陪同","开始每天和肚子里的宝宝说说话，胎教从爸爸的声音开始"]},
+{w:13,baby:"约7.5cm，指纹已形成，肠道开始蠕动练习。",mom:"进入相对舒适的孕中期。精力回升，是运动和出行的好时段。",tip:"孕中期（13-27周）是旅行、拍孕妇照的最佳窗口。",dad:["规划一次轻松的短途旅行（选医疗方便的目的地）","一起报名孕妇学校/产前课程，爸爸必须到场","研究婴儿用品，做功课列清单，避免临产乱买"]},
+{w:14,baby:"约8.5cm，会皱眉、眯眼，长出胎毛保护皮肤。",mom:"小腹微隆。可能出现鼻塞、牙龈肿，是激素性的。",tip:"15-20周可做唐氏筛查（或无创DNA），和医生确认方案。",dad:["和医生一起商定唐筛/无创DNA方案并预约","每周固定一天'孕妈放松日'，安排她喜欢的活动","学习拍孕肚照，每周同角度记录一张"]},
+{w:15,baby:"约10cm，重70g。能感受到外界光线，骨骼加速钙化。",mom:"需要加强补钙（1000mg/天）和铁。可能开始腿抽筋。",tip:"夜里腿抽筋多与缺钙有关，睡前热水泡脚有帮助。",dad:["采购孕妇奶粉/钙片，每天提醒妻子按时吃","妻子腿抽筋时帮她做足底反向拉伸","把家里地毯边角、浴室防滑处理一遍，防摔倒"]},
+{w:16,baby:"约12cm，重100g。听觉发育中，经产妇可能已感到胎动。",mom:"子宫升至肚脐与耻骨之间。头发变浓密，皮肤或有色素沉着。",tip:"16-20周留意第一次胎动，像小鱼吐泡泡。",dad:["每天睡前贴着肚子给宝宝讲个故事或唱首歌","唐筛结果出来陪妻子一起看，异常时一起面对","开始物色月嫂/月子中心或和长辈沟通月子安排"]},
+{w:17,baby:"约13cm，重140g。胎盘完全成熟，开始储存脂肪。",mom:"肚子明显了，重心开始改变。可能腰酸，注意坐姿。",tip:"侧睡更舒适，可以开始用孕妇枕。",dad:["买一个孕妇枕送给妻子","家里换灯泡、搬重物、够高处的活全部接管","陪妻子做孕妇瑜伽或散步，帮她缓解腰酸"]},
+{w:18,baby:"约14cm，重190g。耳骨成形，开始听见妈妈的心跳和你的声音。",mom:"大多数准妈妈在本周前后感到胎动！记录下这个时刻。",tip:"20-24周的大排畸（系统B超）要提前2-4周预约。",dad:["立刻预约大排畸B超（热门医院要抢号）","第一次胎动是大事，和妻子一起记录纪念","坚持每天对宝宝说话，宝宝已经能听到爸爸的低音了"]},
+{w:19,baby:"约15cm，重240g。感官神经快速发育，大脑分区形成。",mom:"可能出现妊娠纹前兆，肚皮发痒别抓挠。",tip:"妊娠纹重在预防：控体重、保湿。",dad:["给妻子买孕妇专用润肤油，主动帮她涂抹肚皮和腰侧","一起给宝宝取小名，增加参与感","检查家庭财务：保险、存款、产假安排"]},
+{w:20,baby:"约16.5cm，重300g。孕程过半！会吮手指、打哈欠、翻跟头。",mom:"孕程过半，宫高平肚脐。胃口大开，注意少吃多餐控糖。",tip:"本周起每天数胎动的习惯可以慢慢建立。",dad:["把手放上肚皮感受胎动，这是属于爸爸的第一次'握手'","一起去拍孕妇照","和妻子讨论并确定分娩医院"]},
+{w:21,baby:"约26cm（头到脚），重360g。眉毛睫毛长齐，吞咽羊水练习消化。",mom:"相对舒适期，但可能出现水肿前兆，少站久坐。",tip:"大排畸通常安排在20-24周，按预约时间前往。",dad:["陪同大排畸检查，这是看清宝宝的重要机会","检查结果一起听医生解读，别让妻子独自紧张","晚饭后陪散步30分钟，控糖控体重"]},
+{w:22,baby:"约27.5cm，重430g。皮肤仍皱、透明，长出胎脂。",mom:"可能出现假性宫缩（肚子偶尔发紧），休息后缓解属正常。",tip:"假性宫缩频繁（每小时>4次）或疼痛需就医。",dad:["学会分辨假性宫缩和危险信号，做家里的'冷静担当'","开始布置婴儿房：通风、除甲醛要趁早","研究婴儿床、安全座椅的选购（安全认证最重要）"]},
+{w:23,baby:"约28.9cm，重500g。听力完善，对你的声音已有记忆。",mom:"肚脐可能凸出，腰背酸痛加重。",tip:"24-28周做妊娠期糖尿病筛查（糖耐OGTT），需空腹。",dad:["预约糖耐检查，记下空腹要求提醒妻子","糖耐检查等待时间长，带上水和零食（测完才能吃）陪她","给妻子按摩腰背，学两招孕期按摩手法"]},
+{w:24,baby:"约30cm，重600g。肺部发育关键期，达到'有存活可能'的里程碑。",mom:"糖耐检查周。可能出现便秘、痔疮，多吃膳食纤维。",tip:"血糖异常也别慌，多数通过饮食运动可控。",dad:["全程陪同糖耐检查","如查出妊糖，和妻子一起执行控糖饮食（你也一起吃）","家里水果蔬菜常备，含糖饮料清出冰箱"]},
+{w:25,baby:"约34.6cm，重660g。鼻孔打开，开始练习'呼吸'羊水。",mom:"睡眠开始变差，翻身困难。白天可能更容易累。",tip:"左侧卧位有利胎盘供血，但以舒服为准。",dad:["帮妻子用孕妇枕摆好睡姿，半夜她翻身你搭把手","把卧室遮光、静音优化一遍","开始拟定待产包清单（本APP有现成的）"]},
+{w:26,baby:"约35.6cm，重760g。眼睛第一次睁开！对光有反应。",mom:"宫高继续上升，可能气短。补铁很重要，警惕贫血。",tip:"孕晚期贫血常见，产检查血常规按时做。",dad:["菜单里加红肉、猪肝、菠菜，负责买菜做饭","陪妻子参加产前课程学习拉玛泽呼吸法，你是教练","确认公司陪产假天数，提前和领导报备"]},
+{w:27,baby:"约36.6cm，重875g。大脑活动活跃，有了睡眠周期，会做梦。",mom:"孕中期最后一周。可能出现下肢水肿，晚上抬高双腿。",tip:"28周后产检频率变为每2周一次。",dad:["每晚帮妻子垫高双腿、按摩小腿消水肿","采购待产包物品，按清单逐项打勾","把丈母娘/婆婆的支援时间协调好"]},
+{w:28,baby:"约37.6cm，重1kg。进入孕晚期！眼睛能睁能闭，胎位还会变动。",mom:"进入孕晚期，行动明显笨重。开始每天早中晚各数1小时胎动。",tip:"数胎动：每小时≥3次为正常，明显减少要就医。",dad:["和妻子一起数胎动，做记录表","车里油加满/电充满，随时能出发去医院","把去医院的路线（含备用路线）跑一遍，掐好时间"]},
+{w:29,baby:"约38.6cm，重1.15kg。骨骼变硬，大脑沟回增多，胎动更有劲。",mom:"可能出现耻骨痛、坐骨神经痛。托腹带能减轻负担。",tip:"29-32周做一次产检（含B超看发育和胎位）。",dad:["给妻子买托腹带并帮她调整","从现在起妻子外出尽量陪同，不让她独自远行","学习新生儿护理视频：换尿布、拍嗝、洗澡"]},
+{w:30,baby:"约39.9cm，重1.3kg。眼睛能追光，头发变浓，脂肪继续囤积。",mom:"子宫顶到肋骨，胃被挤压，吃一点就饱。",tip:"少食多餐，睡前2小时别吃太多防反酸。",dad:["把一日三餐改成五六顿小餐帮她安排好","孕晚期洗澡有风险，浴室装好扶手、防滑垫，她洗澡时你在门外待命","和妻子讨论分娩方式的意愿（顺产/剖宫产），了解利弊"]},
+{w:31,baby:"约41.1cm，重1.5kg。五感俱全，会转头找光源。",mom:"呼吸更费力，属正常。夜尿更频繁。",tip:"如出现头痛、眼花、血压高，警惕妊娠高血压，立即就医。",dad:["家里备血压计，每天帮妻子量血压做记录","半夜她起夜时留个小夜灯，通道保持无障碍","确认待产包完成度80%以上"]},
+{w:32,baby:"约42.4cm，重1.7kg。多数宝宝已转为头位，为出生做准备。",mom:"本周产检会关注胎位。手脚水肿可能加重。",tip:"胎位不正也别急，33-34周前还有机会转。",dad:["陪产检问清胎位情况","戒指手镯如果紧了帮妻子取下保管","跟公司交接工作，为陪产假铺路"]},
+{w:33,baby:"约43.7cm，重1.9kg。免疫系统发育，从妈妈处获取抗体。",mom:"33-36周产检每2周一次。骨盆压迫感增强。",tip:"分泌物明显增多或流水感，警惕破水，及时就医。",dad:["学会识别破水vs漏尿（破水无法憋住、持续流出）","和妻子一起确认月子安排的最终版","练习安装婴儿安全座椅"]},
+{w:34,baby:"约45cm，重2.1kg。肺部接近成熟，此后早产风险大大降低。",mom:"假性宫缩更频繁。行动'孕味'十足，弯腰穿鞋都难。",tip:"36周前每2周产检，之后每周一次。",dad:["帮妻子穿鞋穿袜，别嫌麻烦这是福利","把新生儿衣物、床品全部洗净晒好","把双方父母、月嫂的联系方式做成'应急通讯录'贴冰箱上"]},
+{w:35,baby:"约46.2cm，重2.4kg。肾脏发育完全，肝脏开始工作。",mom:"睡眠碎片化严重。宝宝入盆的话呼吸会突然轻松。",tip:"入盆后可能尿频加重、耻骨痛，是临产前奏。",dad:["待产包放到门口/车上，检查证件（身份证、医保卡、产检册）齐全","手机存好：产科电话、出租车备用、双方父母","跟妻子约定'发动'时的分工流程，演练一遍"]},
+{w:36,baby:"约47.4cm，重2.6kg。皮下脂肪饱满，胎毛渐褪，随时准备好。",mom:"37周就是足月！本周起每周产检+胎心监护。",tip:"胎心监护约20-40分钟，吃饱再去（宝宝活跃）。",dad:["每周产检+胎监全勤陪同","确认住院流程：挂号、押金、病房，提前踩点","这周起你的手机24小时不静音，酒一滴都不沾（随时开车）"]},
+{w:37,baby:"约48.6cm，重2.9kg。足月啦！宝宝已发育成熟，等待发动。",mom:"随时可能临产。见红、规律宫缩、破水是三大信号。",tip:"规律宫缩5-6分钟一次时出发去医院；破水立即平躺送医。",dad:["背熟临产三信号和应对：见红（不急，观察）、规律宫缩（出发）、破水（平躺立即送医）","确认陪产/待产分工：谁陪产房、谁办手续","保持体力，你也要睡好，大战在即"]},
+{w:38,baby:"约49.8cm，重3kg。胎脂大部分褪去，头部继续下降。",mom:"宫缩练习更频繁，宫颈在悄悄软化。保持散步。",tip:"每天照常数胎动，胎动异常立即就医。",dad:["陪妻子散步促进入盆，随身带好证件","给妻子做她爱吃的，储备体力","再检查一遍待产包：产妇卫生巾、婴儿NB纸尿裤、奶瓶都在吗"]},
+{w:39,baby:"约50.7cm，重3.3kg。所有系统准备就绪，只等那一刻。",mom:"焦虑与期待并存。宫颈评分高的话医生可能讨论催产计划。",tip:"超过预产期1周（41周）通常会安排催产，别过度担心。",dad:["安抚妻子情绪，陪她看喜剧、聊产后的美好计划","确认月嫂/家人待命状态","学习产房里怎么做：递水、擦汗、喊加油、别晕倒"]},
+{w:40,baby:"约51cm，重3.4kg。预产期到！只有5%的宝宝踩点出生，耐心等待。",mom:"到了预产期。医生会评估胎盘和羊水，决定继续等还是干预。",tip:"41周仍未发动一般建议住院催产，听医生安排。",dad:["每天陪妻子按医嘱做胎监或产检","发动时刻保持冷静：计时宫缩、拿包、出发，你演练过的","产房外的等待或产房内的陪伴，都请全程在场——见证孩子出生是你一生难忘的时刻"]}
+];
+
+// ===== 产检时间表 =====
+const CHECKUPS = [
+{t:"孕6-8周",n:"首次B超",d:"确认宫内孕、胎心胎芽，排除宫外孕",dad:"陪同，一起听第一次胎心"},
+{t:"孕6-13周",n:"建档+首次产检",d:"病史、血尿常规、肝肾功能、血型、传染病筛查、心电图",dad:"请假全程陪同，负责排队跑腿"},
+{t:"孕11-13周⁺⁶",n:"NT检查",d:"颈项透明层厚度，早期排畸第一关（需提前预约）",dad:"负责抢号预约"},
+{t:"孕15-20周",n:"唐氏筛查/无创DNA",d:"染色体异常风险筛查，高龄或高风险建议无创/羊穿",dad:"陪同抽血，一起听结果解读"},
+{t:"孕20-24周",n:"大排畸（系统B超）",d:"全面排查胎儿结构畸形，最重要的一次B超",dad:"必须陪同！提前2-4周预约"},
+{t:"孕24-28周",n:"糖耐量试验(OGTT)",d:"妊娠期糖尿病筛查，需空腹，喝糖水后测3次血糖",dad:"陪同等待2小时，备好测完吃的食物"},
+{t:"孕29-32周",n:"产检+B超",d:"胎儿发育、胎位、羊水、脐血流评估",dad:"问清胎位，记录医生建议"},
+{t:"孕33-36周",n:"产检（每2周）",d:"宫高腹围、血压体重、胎位复查，36周起查胎心监护",dad:"每次陪同，路线踩点"},
+{t:"孕37-40周",n:"每周产检+胎监",d:"胎心监护、宫颈评估，讨论分娩方式",dad:"全勤陪同，随时待命状态"}
+];
+
+// ===== 待产包清单 =====
+const BAG = [
+{g:"证件类（爸爸负责）",items:["双方身份证","医保卡/生育保险凭证","产检手册/母子健康手册","现金+银行卡（住院押金）"]},
+{g:"妈妈用品",items:["产妇卫生巾（L/M/S各1包）","一次性内裤（1周量）","哺乳内衣2-3件","开襟睡衣2套","吸管杯（躺着喝水）","洗漱用品、拖鞋","产妇护理垫","吸奶器","下奶食材（提前备好食谱）"]},
+{g:"宝宝用品",items:["NB码纸尿裤1包","和尚服/连体衣3-4套","包被2条","小帽子、袜子","奶瓶2个+新生儿奶嘴","新生儿配方奶1小罐（备用）","婴儿湿巾、棉柔巾","护臀膏"]},
+{g:"爸爸陪产包（爸爸负责）",items:["充电宝+数据线","相机/手机（记录第一面）","自己的换洗衣物和洗漱包","小零食巧克力（补充体力）","陪产假申请单（提前交）","红包若干（报喜用）"]}
+];
+// ===== 0-6岁数据 =====
+// range: [起始月龄, 结束月龄)
+const BABY = [
+// ---- 0-1岁（逐月）----
+{seg:"y1",label:"0-1月",range:[0,1],
+ mile:"俯卧时能短暂抬头；对声音有惊跳反应；能注视20-30cm内的人脸（正好是喂奶时妈妈脸的距离）。",
+ feed:"按需喂养，母乳每天8-12次。人工喂养每次60-90ml、约3小时一次。出生两周起每天补维生素D3 400IU。",
+ sleep:"每天16-20小时，昼夜不分。仰卧入睡最安全，床上不放枕头、毛绒玩具。",
+ care:"脐带残端保持干燥，约1-2周脱落；黄疸多在2周内消退，加重或超2周就医；出生后按时打乙肝疫苗和卡介苗。",
+ dad:["夜间喂奶你负责一半：冲奶/递娃/拍嗝/换尿布，让妈妈多睡整觉","拍嗝是爸爸必修课：竖抱、空心掌由下往上轻拍","每天承担至少3次换尿布，观察大小便颜色","月子里你是'守门员'：谢绝过多探视，保护妻子休息","留意妻子情绪，产后抑郁不是矫情，发现苗头及时求助"]},
+{seg:"y1",label:"1-2月",range:[1,2],
+ mile:"俯卧抬头45°；开始社交性微笑；发出咕咕声；眼睛能追物过中线。",
+ feed:"母乳按需，人工每次90-120ml。吃奶后竖抱拍嗝防吐奶。",
+ sleep:"15-17小时，夜间可能拉长到4-5小时连续睡眠。开始建立'吃-玩-睡'节奏。",
+ care:"满月体检+乙肝第二针；肠绞痛高发期（傍晚哭闹），飞机抱、白噪音可缓解；红屁屁勤换尿布厚涂护臀膏。",
+ dad:["肠绞痛哭闹时段（多在傍晚）由你接管：飞机抱、竖抱走动","每天给宝宝做抚触操，爸爸的大手很有安全感","负责宝宝洗澡：水温38-40℃，托稳头颈","陪妻子去满月体检，记录身高体重到本APP"]},
+{seg:"y1",label:"2-3月",range:[2,3],
+ mile:"俯卧抬头90°并撑起前臂；会咯咯笑出声；小手能短暂抓握摇铃；开始吃手（正常，不用阻止）。",
+ feed:"奶量每天700-900ml，逐渐规律为3-4小时一次。",
+ sleep:"开始分昼夜！夜间连续睡眠拉长。白天3-4次小睡。",
+ care:"2月龄打脊灰疫苗；口水增多是唾液腺发育；'趴'是最好的锻炼，每天多次清醒俯趴。",
+ dad:["每天陪宝宝俯趴玩10-20分钟，你趴对面逗他抬头","做宝宝的'健身教练'：蹬腿操、被动操","多和宝宝面对面说话，夸张表情+高音调他最爱","妈妈若返岗前焦虑，一起商量带娃分工"]},
+{seg:"y1",label:"3-4月",range:[3,4],
+ mile:"竖抱头稳；会翻身（仰卧→侧卧）；大笑出声；见到奶瓶或乳房会兴奋。",
+ feed:"奶量800-1000ml/天。可能出现'厌奶期'，别强喂，安静环境喂奶。",
+ sleep:"14-16小时，可能遭遇'4月龄睡眠倒退'，是大脑发育的正常阶段，坚持作息会过去。",
+ care:"3月龄打脊灰+百白破疫苗；翻身期！床上换尿布手不能离开宝宝，谨防坠床。",
+ dad:["床、沙发防坠落检查：围栏装好，换尿布永远一手护着","睡眠倒退期夜醒增多，和妻子轮班，别让一个人扛","下班后的'爸爸时间'：举高高（不抛接）、唱歌、读黑白卡","给宝宝拍百天照，你来策划"]},
+{seg:"y1",label:"4-5月",range:[4,5],
+ mile:"扶坐时头很稳；主动伸手抓玩具并塞嘴里；对名字有反应；能连续翻身。",
+ feed:"奶量维持800-1000ml。开始观察辅食信号：能扶坐、对大人吃饭感兴趣、挺舌反射消失。",
+ sleep:"白天规律3次小睡。可以开始培养自主入睡：困了放床，拍拍安抚。",
+ care:"4月龄打脊灰滴剂+百白破第二针；玩具入嘴期，小物件（纽扣电池最危险！）全部收离。",
+ dad:["家里做一次'跪地巡查'：以宝宝视角排查小物件、电线、插座","采购辅食工具：辅食机、硅胶勺、围兜、餐椅","陪玩升级：躲猫猫、摇铃追踪，每天雷打不动30分钟"]},
+{seg:"y1",label:"5-6月",range:[5,6],
+ mile:"独坐片刻；双手互传玩具；发出ba、ma音节；认生开始（是依恋发展的标志）。",
+ feed:"满6月龄（或医生评估后不早于4月）添加辅食：第一口高铁米粉，一次一种、观察3天过敏反应。奶仍是主食。",
+ sleep:"部分宝宝能睡整夜。固定睡前程序：洗澡→抚触→喝奶→关灯→睡觉。",
+ care:"5月龄百白破第三针、6月龄乙肝第三针+流脑疫苗；出牙可能开始，牙胶冷藏后更舒缓。",
+ dad:["宝宝的第一口辅食由你喂也很有纪念意义，拍下来","负责辅食装备到位和餐椅安全带检查","认生期抱不了别失落，多露脸多陪伴就会好","睡前程序你承包一环（洗澡或讲故事），固定不缺席"]},
+{seg:"y1",label:"6-7月",range:[6,7],
+ mile:"独坐稳；会把玩具从一手换到另一手；开始理解'不'的语气；可能萌出第一颗牙（下门牙）。",
+ feed:"辅食每天1-2次，逐步加入蔬菜泥、水果泥、蛋黄、肉泥（高铁食物优先）。奶量600-800ml。",
+ sleep:"14小时左右，白天2-3次小睡。",
+ care:"第一颗牙萌出就要开始刷牙（指套牙刷+米粒大含氟牙膏）；6月龄后母传抗体减少，易感冒发烧。",
+ dad:["给宝宝刷牙这活你认领：每天早晚，从第一颗牙开始","辅食你也要会做：学会蒸蛋黄、打肉泥","宝宝第一次发烧别慌：38.5℃以下物理观察，精神差/高烧就医，你负责冷静决策"]},
+{seg:"y1",label:"7-8月",range:[7,8],
+ mile:"匍匐或手膝爬行萌芽；会拍手；无意识叫baba mama（心都化了）；用拇指和其他手指抓小物。",
+ feed:"辅食每天2次，引入碎末状食物锻炼咀嚼。可以开始手指食物（香蕉条、蒸软的胡萝卜条）。",
+ sleep:"可能出现分离焦虑性夜醒，及时安抚但保持原则。",
+ care:"8月龄打麻腮风+乙脑疫苗；爬行期到来，地面清洁+安全围栏。",
+ dad:["听到第一声'baba'请记录！并加倍回应","布置安全爬行区：爬行垫、家具防撞角、插座保护盖","你当'猎物'趴地上引导宝宝爬向你","晚上哄睡轮到你，让妈妈有自己的时间"]},
+{seg:"y1",label:"8-9月",range:[8,9],
+ mile:"爬行熟练；扶物站立；找得到藏起来的玩具（客体永存概念）；听懂简单指令如'拜拜'。",
+ feed:"辅食2-3次，尝试颗粒状。别加盐！1岁前食物不加盐、糖、蜂蜜。",
+ sleep:"白天2次小睡渐成型（上午+下午）。",
+ care:"9月龄打流脑第二针；扶站期防摔倒，茶几尖角包好。",
+ dad:["把家里危险区再排查一遍：楼梯口装门栏、抽屉装安全锁","和宝宝玩藏猫猫、藏玩具，训练认知","饭桌上给宝宝专属餐椅位，全家一起吃饭他学得最快"]},
+{seg:"y1",label:"9-10月",range:[9,10],
+ mile:"扶走（扶着沙发挪步）；会用食指戳、点；挥手拜拜；理解更多词语。",
+ feed:"辅食3次成型，奶量约600ml。鼓励自己抓着吃，脏就脏点。",
+ sleep:"部分宝宝并觉前兆，白天小睡缩短。",
+ care:"不建议用学步车（危险且不利发育）；光脚学步最好。",
+ dad:["收起学步车（如果买了），扶走练习你弯腰扶","容忍'吃得一片狼藉'，自主进食是重要能力","给宝宝读绘本安排上：洞洞书、触摸书，每天10分钟"]},
+{seg:"y1",label:"10-11月",range:[10,11],
+ mile:"独站几秒钟；有意识地叫爸爸妈妈；会模仿动作（拍手、再见）；用动作表达需求（指、伸手）。",
+ feed:"一日三餐辅食+2-3次奶。食物种类越丰富越好，继续避开盐糖蜂蜜。",
+ sleep:"12-14小时含白天2次小睡。",
+ care:"体检关注贫血筛查；宝宝扔东西是学习，别恼火。",
+ dad:["'扔东西游戏'陪玩担当：他扔你捡，顺便教'给我'","牵一只手练走路（别牵手腕，防脱臼）","开始给宝宝策划1岁生日和照片墙"]},
+{seg:"y1",label:"11-12月",range:[11,12],
+ mile:"独走几步或即将独走；会说1-3个有意义的词；用杯子喝水；懂得用哭闹之外的方式表达。",
+ feed:"向家庭饮食过渡（低盐版）。1岁后可以喝鲜牛奶了。",
+ sleep:"趋向白天1-2次小睡，夜间11小时左右。",
+ care:"周岁体检+生长评估；第一步随时到来，客厅清出安全'跑道'。",
+ dad:["记录第一次独立行走的视频，一辈子的珍藏","策划周岁生日：抓周、全家福","做一次'年度总结'：和妻子互相感谢这一年的付出，聊聊彼此的辛苦"]},
+// ---- 1-3岁 ----
+{seg:"y3",label:"12-18月",range:[12,18],
+ mile:"走稳、能跑几步、扶栏上楼梯；词汇量从几个词涨到20-50个；会用勺子；模仿大人做家务；出现'自我意识'萌芽。",
+ feed:"三餐两点心+奶400-500ml。和大人同桌吃饭，少盐少糖。挑食萌芽期：一种食物尝试10-15次才可能接受，别放弃。",
+ sleep:"13-14小时，多数并为白天1次午睡。",
+ care:"18月龄打百白破加强+麻腮风第二针+甲肝疫苗；学步期磕碰常见，学会判断：能哭能动多无碍，意识差、呕吐立即就医。",
+ dad:["每天'放电'任务归你：户外1-2小时，跑、爬、捡树叶","语言爆发靠输入：你多说、多描述眼前的事物","开始立规矩：温和而坚定，爸妈原则要一致，提前和妻子对好口径","换尿布、哄睡、洗澡此时应该是你的熟练工种"]},
+{seg:"y3",label:"18-24月",range:[18,24],
+ mile:"能跑、会踢球、蹲下捡东西；两词句出现（'妈妈抱''要车车'）；能指认身体部位；喜欢说'不'——自主期来了。",
+ feed:"基本随家庭饮食。零食选水果、酸奶、奶酪，远离糖果、含糖饮料。",
+ sleep:"12-13小时，午睡1次约2小时。可能抗拒睡觉，坚持固定睡前程序。",
+ care:"'可怕的两岁'前奏：发脾气是因为大脑还管不住情绪，不是故意作对；如厕训练看信号（尿布干得久、对马桶好奇），一般18-30月之间，别攀比。",
+ dad:["娃发脾气时你要做'定海神针'：蹲下来、共情、等平静，不吼不威胁","如厕训练爸爸教儿子有天然优势","'跟爸爸疯'的游戏时间：追逐、举高、枕头大战（安全前提下）","每周至少一次'爸爸单独带娃半天'，让妈妈完全放假"]},
+{seg:"y3",label:"2-2.5岁",range:[24,30],
+ mile:"双脚跳、独自上下楼梯；句子3-4个词，会问'这是什么'；假装游戏出现（喂娃娃吃饭）；认识颜色和形状萌芽。",
+ feed:"规律三餐两点，奶300-400ml/天。让孩子参与摆碗筷、剥豆子。",
+ sleep:"11-13小时。可能从婴儿床换到小床。",
+ care:"2岁打乙脑第二针；terrible two高峰：给有限选择（'穿红色还是蓝色？'）比命令有效；屏幕时间：2岁前不建议，2岁后每天<1小时且有大人陪同。",
+ dad:["你先放下手机——孩子的屏幕习惯是看爸妈学的","每天20分钟'地板时间'：跟着孩子玩，他主导你配合","语言黄金期多读绘本，爸爸读的科普类、车类他可能更爱","开始教安全规则：插座、热水、马路，用游戏方式反复讲"]},
+{seg:"y3",label:"2.5-3岁",range:[30,36],
+ mile:"会骑三轮车/平衡车；说出自己的名字和年龄；数到3-5；开始和小朋友一起玩（而不只是各玩各的）。",
+ feed:"和家人一致的健康饮食。开始练习用筷子（别强求）。",
+ sleep:"11-13小时，午睡渐短。",
+ care:"3岁打流脑A+C加强；多数孩子白天如厕自理；为入园做准备：自己吃饭、表达需求、短暂分离练习。",
+ dad:["入园准备开始：带孩子在幼儿园附近玩，熟悉环境","练习'分离-重逢'：说好'爸爸去买菜，10分钟回来'并守时，建立信任","教孩子说完整需求句：'我想喝水'而不是哭","陪孩子疯玩平衡车、滑梯，运动能力爸爸带出来的"]},
+// ---- 3-6岁（简化版）----
+{seg:"y6",label:"3-4岁",range:[36,48],
+ mile:"单脚跳、会用剪刀；说完整句子、爱问'为什么'；能自己穿简单衣物；开始有好朋友。",
+ feed:"三餐规律，奶300-400ml。参与做饭：洗菜、搅拌，吃饭更积极。",
+ sleep:"10-13小时（含午睡）。",
+ care:"重点：适应幼儿园。入园焦虑1-4周正常，坚持送、准时接、多沟通；秋季入园前体检；教隐私保护：背心裤衩覆盖的地方别人不能碰。",
+ dad:["入园第一个月尽量由爸爸送：分别更干脆，孩子适应更快","每天放学后先问'今天玩了什么'而不是'学了什么'","周末'爸爸探险日'：爬山、抓虫子、踢球","和妻子分好家园联系分工，家长群别只让妈妈盯"]},
+{seg:"y6",label:"4-5岁",range:[48,60],
+ mile:"单脚站10秒、拍球；讲简单的故事；数到10以上；懂得轮流和分享；画人有头有身体。",
+ feed:"注意控制零食和含糖饮料，保护乳牙（每年查牙1-2次）。",
+ sleep:"10-12小时，部分孩子不再午睡。",
+ care:"4岁打脊灰第四针；培养习惯黄金期：自己收玩具、睡前刷牙、按时作息；情绪教育：帮孩子说出'我很生气因为……'。",
+ dad:["教孩子骑自行车、跳绳、游泳——运动技能爸爸主场","睡前聊天10分钟：今天最开心和最难过的事","孩子问'为什么'别敷衍，不会就一起查——示范学习态度","做守信的爸爸：答应的事必须兑现"]},
+{seg:"y6",label:"5-6岁",range:[60,72],
+ mile:"跳绳、系鞋带雏形；语言表达接近成人日常水平；理解规则类游戏；能专注15-20分钟。",
+ feed:"均衡饮食+每天户外2小时（预防近视最有效的方法）。",
+ sleep:"9-11小时，保证早睡（幼升小后更重要）。",
+ care:"6岁打白破加强+流脑A+C第二针；幼小衔接：重点不是提前学拼音算术，而是专注力、任务意识、生活自理；换牙期开始，六龄齿萌出建议做窝沟封闭。",
+ dad:["幼小衔接你来抓：练习静坐15分钟、自己整理书包","每天户外运动1-2小时的陪伴主力是你（防近视+长个）","开始给孩子讲'钱'：零花钱、储蓄罐、想要vs需要","上小学前的最后一个暑假，带孩子完成一次'大冒险'（旅行/露营），做足仪式感"]}
+];
+
+// ===== 常见问题护理 =====
+const CARE = [
+{icon:"🌡️",t:"发烧",d:"38.5℃以下精神好：少穿散热、多喝水观察。38.5℃以上或不适：按体重服对乙酰氨基酚（2月+）或布洛芬（6月+）。",warn:"3月以下发烧、高烧不退、精神萎靡、抽搐、皮疹——立即就医。",dad:"爸爸负责：家里常备退烧药并记住剂量表；夜间发烧你值班测温；决定就医时你开车，别慌。"},
+{icon:"💛",t:"黄疸",d:"多数新生儿生理性黄疸2-3天出现、2周内消退。多吃多排有助退黄。",warn:"24小时内出现、手心脚心发黄、超2周不退、嗜睡拒奶——就医测胆红素。",dad:"爸爸负责：每天在自然光下看宝宝肤色变化，拍照对比；复查跑腿。"},
+{icon:"🍑",t:"湿疹",d:"保湿是核心！每天全身厚涂低敏保湿霜2次以上。洗澡水别烫、时间短。中重度遵医嘱用激素药膏（安全，别恐惧）。",warn:"渗液、感染迹象、大面积加重——就医。",dad:"爸爸负责：保湿霜采购和每晚涂抹；把家里温度湿度调舒适（20-24℃、50-60%）。"},
+{icon:"💩",t:"腹泻",d:"重点防脱水：口服补液盐III少量多次。继续喂养不禁食。注意臀部护理防红屁屁。",warn:"尿量明显减少、精神差、血便、持续高烧——就医。",dad:"爸爸负责：家中常备口服补液盐；记录大便次数性状（拍照给医生看很有用）。"},
+{icon:"🚽",t:"便秘",d:"攒肚（母乳宝宝几天一次软便）不是便秘。真便秘（干硬、痛苦）：辅食期多吃西梅、火龙果、蔬菜，多喝水多运动。",warn:"腹胀呕吐、便血、体重不增——就医。",dad:"爸爸负责：给宝宝做排气操、顺时针揉肚子；采购高纤维食材。"},
+{icon:"🫁",t:"呛奶/异物急救",d:"呛奶：立即侧脸或俯位拍背，清理口鼻。异物窒息：1岁内'拍背压胸法'（5次背部叩击+5次胸部按压），1岁以上海姆立克。",warn:"面色青紫、无法哭出声——边急救边打120。",dad:"爸爸必修：花30分钟看急救教学视频并演练，全家你最该会这个。关键时刻能救命。"},
+{icon:"😴",t:"睡眠安全",d:"1岁内仰睡、婴儿床与父母同房不同床；床上无枕头被子毛绒玩具；室温20-24℃，睡袋代替盖被。",warn:"任何俯睡、松软床品都会增加婴儿猝死(SIDS)风险。",dad:"爸爸负责：婴儿床安全布置验收人；夜里检查宝宝睡姿这班你来站。"},
+{icon:"🦷",t:"出牙不适",d:"流口水、爱咬、烦躁属正常。冷藏牙胶、干净手指按摩牙龈可缓解。第一颗牙萌出即开始刷牙。",warn:"高烧、严重腹泻别都赖出牙，该就医就医。",dad:"爸爸负责：早晚刷牙执行人；牙胶清洁消毒。"}
+];
+
+// ===== 疫苗（国家免疫规划）=====
+const VAX = [
+{age:"出生",m:0,list:["乙肝疫苗 第1针","卡介苗"]},
+{age:"1月龄",m:1,list:["乙肝疫苗 第2针"]},
+{age:"2月龄",m:2,list:["脊灰灭活疫苗 第1针"]},
+{age:"3月龄",m:3,list:["脊灰灭活疫苗 第2针","百白破 第1针"]},
+{age:"4月龄",m:4,list:["脊灰疫苗 第3剂","百白破 第2针"]},
+{age:"5月龄",m:5,list:["百白破 第3针"]},
+{age:"6月龄",m:6,list:["乙肝疫苗 第3针","A群流脑多糖 第1针"]},
+{age:"8月龄",m:8,list:["麻腮风 第1针","乙脑减毒活疫苗 第1针"]},
+{age:"9月龄",m:9,list:["A群流脑多糖 第2针"]},
+{age:"18月龄",m:18,list:["百白破 第4针","麻腮风 第2针","甲肝减毒活疫苗"]},
+{age:"2周岁",m:24,list:["乙脑减毒活疫苗 第2针"]},
+{age:"3周岁",m:36,list:["A+C群流脑多糖 第1针"]},
+{age:"4周岁",m:48,list:["脊灰疫苗 第4剂"]},
+{age:"6周岁",m:72,list:["白破疫苗 加强","A+C群流脑多糖 第2针"]}
+];
+
+// ===== 生长参考范围（WHO标准约±2SD）=====
+// [月龄, 男体重低, 男体重高, 男身高低, 男身高高, 女体重低, 女体重高, 女身高低, 女身高高]
+const GROWTH = [
+[0, 2.5,4.4, 46.1,55.6,  2.4,4.2, 45.4,54.7],
+[1, 3.4,5.8, 50.8,60.6,  3.2,5.5, 49.8,59.5],
+[2, 4.3,7.1, 54.4,64.4,  3.9,6.6, 53.0,63.2],
+[3, 5.0,8.0, 57.3,67.6,  4.5,7.5, 55.6,66.1],
+[4, 5.6,8.7, 59.7,70.1,  5.0,8.2, 57.8,68.6],
+[5, 6.0,9.3, 61.7,72.2,  5.4,8.8, 59.6,70.7],
+[6, 6.4,9.8, 63.3,74.0,  5.7,9.3, 61.2,72.5],
+[8, 6.9,10.7, 66.2,77.2,  6.3,10.2, 64.0,75.8],
+[10,7.4,11.4, 68.7,79.9,  6.7,10.9, 66.5,78.6],
+[12,7.7,12.0, 71.0,82.9,  7.0,11.5, 68.9,81.7],
+[15,8.3,12.8, 74.1,86.6,  7.6,12.4, 72.0,85.4],
+[18,8.8,13.7, 76.9,90.4,  8.1,13.2, 74.9,89.4],
+[21,9.2,14.5, 79.4,93.6,  8.6,14.0, 77.5,92.9],
+[24,9.7,15.3, 81.7,97.0,  9.0,14.8, 80.0,96.1],
+[30,10.5,16.9, 85.1,102.1, 10.0,16.5, 83.6,101.3],
+[36,11.3,18.3, 88.7,107.2, 10.8,18.1, 87.4,106.5],
+[48,12.7,21.2, 94.9,115.9, 12.3,21.5, 94.1,115.7],
+[60,14.1,24.2, 100.7,123.9, 13.7,24.9, 99.9,123.7],
+[72,15.9,27.1, 106.1,130.7, 15.3,27.8, 104.9,130.5]
+];
+// ===== 工具 =====
+function lsGet(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def}catch(e){return def}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function daysBetween(a,b){return Math.round((b-a)/864e5)}
+function today(){const d=new Date();d.setHours(0,0,0,0);return d}
+
+let profile=lsGet('yb_profile',null);
+
+function pregWeek(){ // 当前孕周（1-42）
+  const due=new Date(profile.due); due.setHours(0,0,0,0);
+  const w=40-Math.ceil(daysBetween(today(),due)/7);
+  return Math.max(1,Math.min(42,w));
+}
+function ageMonths(){ // 宝宝月龄（小数）
+  const b=new Date(profile.birth); b.setHours(0,0,0,0);
+  return daysBetween(b,today())/30.4375;
+}
+function ageText(){
+  const m=ageMonths();
+  if(m<1) return Math.max(0,Math.floor(m*30.4375))+"天";
+  if(m<24){const mm=Math.floor(m);return mm+"个月"+(Math.floor((m-mm)*4)>0?"":"")}
+  const y=Math.floor(m/12),mm=Math.floor(m%12);
+  return y+"岁"+(mm?mm+"个月":"");
+}
+function babyStage(m){return BABY.find(s=>m>=s.range[0]&&m<s.range[1])||null}
+
+// ===== 爸爸任务卡（可勾选） =====
+function dadCard(tasks,key,title){
+  const done=lsGet('yb_dad_'+key,[]);
+  let h='<div class="card dad-card"><h3>👨 爸爸行动清单 <span class="badge">本阶段 '+tasks.length+' 项</span></h3>';
+  tasks.forEach((t,i)=>{
+    const on=done.includes(i);
+    h+='<label class="dad-task'+(on?' done':'')+'"><input type="checkbox" '+(on?'checked':'')+' onchange="dadToggle(\''+key+'\','+i+')"><span>'+esc(t)+'</span></label>';
+  });
+  return h+'</div>';
+}
+function dadToggle(key,i){
+  let done=lsGet('yb_dad_'+key,[]);
+  done=done.includes(i)?done.filter(x=>x!==i):done.concat(i);
+  lsSet('yb_dad_'+key,done); renderHome(); renderPregWeek(); renderBaby();
+}
+
+// ===== 首页 =====
+function renderHome(){
+  const el=document.getElementById('view-home');
+  if(!profile){el.innerHTML='<div class="empty">请先完成设置 ⚙️</div>';return}
+  let h='';
+  if(profile.mode==='preg'){
+    const w=pregWeek(), d=PREG[Math.min(w,40)-1];
+    const dueDays=daysBetween(today(),new Date(profile.due));
+    h+='<div class="card stage-card"><p class="sub">当前阶段</p><div class="big">孕 '+w+' 周</div><p>'+(dueDays>=0?'距离预产期还有 '+dueDays+' 天':'已超预产期 '+(-dueDays)+' 天，遵医嘱')+'</p></div>';
+    h+='<div class="card"><h3>👶 宝宝本周</h3><p>'+esc(d.baby)+'</p></div>';
+    h+='<div class="card"><h3>🤰 妈妈本周</h3><p>'+esc(d.mom)+'</p><div class="tip">💡 '+esc(d.tip)+'</div></div>';
+    h+=dadCard(d.dad,'pw'+w,'');
+    const next=CHECKUPS.find(c=>{const m=c.t.match(/(\d+)/);return m&&parseInt(m[1])>=w});
+    const cur=CHECKUPS.filter(c=>{const m=c.t.match(/孕(\d+)-(\d+)/);return m&&w>=+m[1]&&w<=+m[2]});
+    if(cur.length){
+      h+='<div class="card"><div class="next-card"><div class="icon">🏥</div><div><div class="t">近期产检：'+esc(cur[0].n)+'</div><div class="d">'+esc(cur[0].t)+' · '+esc(cur[0].d)+'</div></div></div><div class="dad-inline"><b>👨 爸爸：</b><ul><li>'+esc(cur[0].dad)+'</li></ul></div></div>';
+    }
+  }else{
+    const m=ageMonths();
+    if(m<0){h+='<div class="card stage-card"><div class="big">宝宝还没出生哦</div><p>请在设置中检查生日</p></div>';}
+    else if(m>=72){h+='<div class="card stage-card"><p class="sub">当前阶段</p><div class="big">'+ageText()+'</div><p>🎓 恭喜！宝宝已满6岁毕业啦。这6年你们辛苦了，未来的路继续加油！</p></div>';}
+    else{
+      const s=babyStage(m);
+      h+='<div class="card stage-card"><p class="sub">当前阶段 · '+s.label+'</p><div class="big">'+ageText()+'</div><p>'+(profile.sex==='boy'?'👦 男宝':'👧 女宝')+' · 出生 '+daysBetween(new Date(profile.birth),today())+' 天</p></div>';
+      h+='<div class="card"><h3>🌟 这个阶段的宝宝</h3><p>'+esc(s.mile)+'</p></div>';
+      h+='<div class="card"><h3>🍚 喂养要点</h3><p>'+esc(s.feed)+'</p><div class="tip">😴 '+esc(s.sleep)+'</div></div>';
+      h+=dadCard(s.dad,'bs'+s.range[0],'');
+      // 下一针疫苗
+      const done=lsGet('yb_vax',[]);
+      let nv=null;
+      for(const g of VAX){const pend=g.list.filter(v=>!done.includes(g.age+v));if(pend.length&&g.m>=Math.floor(m)-1){nv={age:g.age,list:pend};break}}
+      if(nv) h+='<div class="card"><div class="next-card"><div class="icon">💉</div><div><div class="t">近期疫苗（'+nv.age+'）</div><div class="d">'+nv.list.map(esc).join('、')+'</div></div></div><div class="dad-inline"><b>👨 爸爸：</b><ul><li>预约接种、当天陪同，接种后留观30分钟</li></ul></div></div>';
+    }
+  }
+  el.innerHTML=h;
+}
+
+// ===== 孕期tab =====
+let curWeek=null;
+function renderPregWeek(){
+  const el=document.getElementById('preg-week');
+  if(curWeek===null) curWeek=(profile&&profile.mode==='preg')?Math.min(pregWeek(),40):12;
+  const d=PREG[curWeek-1];
+  let h='<div class="week-nav"><button onclick="chgWeek(-1)">← 上一周</button><span class="cur">孕 '+curWeek+' 周</span><button onclick="chgWeek(1)">下一周 →</button></div>';
+  h+='<div class="card"><h3>👶 宝宝发育</h3><p>'+esc(d.baby)+'</p></div>';
+  h+='<div class="card"><h3>🤰 妈妈变化</h3><p>'+esc(d.mom)+'</p></div>';
+  h+='<div class="card"><h3>⚠️ 本周注意</h3><p>'+esc(d.tip)+'</p></div>';
+  h+=dadCard(d.dad,'pw'+curWeek,'');
+  el.innerHTML=h;
+}
+function chgWeek(x){curWeek=Math.max(1,Math.min(40,curWeek+x));renderPregWeek()}
+function renderCheckups(){
+  let h='';
+  CHECKUPS.forEach(c=>{
+    h+='<div class="card"><h3>🏥 '+esc(c.n)+' <span class="tag pink">'+esc(c.t)+'</span></h3><p>'+esc(c.d)+'</p><div class="dad-inline"><b>👨 爸爸任务：</b><ul><li>'+esc(c.dad)+'</li></ul></div></div>';
+  });
+  document.getElementById('preg-checkup').innerHTML=h;
+}
+function renderBag(){
+  const done=lsGet('yb_bag',[]);
+  let h='';
+  BAG.forEach((g,gi)=>{
+    const isDad=g.g.includes('爸爸');
+    h+='<div class="card"><h3>'+(isDad?'👨 ':'🎒 ')+esc(g.g)+'</h3>';
+    g.items.forEach((it,i)=>{
+      const k=gi+'-'+i, on=done.includes(k);
+      h+='<label class="ck'+(on?' done':'')+'"><input type="checkbox" '+(on?'checked':'')+' onchange="bagToggle(\''+k+'\')"><span>'+esc(it)+'</span></label>';
+    });
+    h+='</div>';
+  });
+  document.getElementById('preg-bag').innerHTML=h;
+}
+function bagToggle(k){
+  let done=lsGet('yb_bag',[]);
+  done=done.includes(k)?done.filter(x=>x!==k):done.concat(k);
+  lsSet('yb_bag',done); renderBag();
+}
+
+// ===== 育儿tab =====
+let curSeg='y1', curStage=null;
+function renderBaby(){
+  const el=document.getElementById('baby-content');
+  if(curSeg==='care'){
+    let h='';
+    CARE.forEach(c=>{
+      h+='<div class="card"><h3>'+c.icon+' '+esc(c.t)+'</h3><p>'+esc(c.d)+'</p><div class="tip">🚨 '+esc(c.warn)+'</div><div class="dad-inline"><b>👨 '+esc(c.dad)+'</b></div></div>';
+    });
+    el.innerHTML=h; return;
+  }
+  const stages=BABY.filter(s=>s.seg===curSeg);
+  if(curStage===null||!stages.includes(curStage)){
+    curStage=stages[0];
+    if(profile&&profile.mode==='born'){const s=babyStage(ageMonths());if(s&&s.seg===curSeg)curStage=s;}
+  }
+  let h='<div class="chips">';
+  stages.forEach((s,i)=>{h+='<button class="chip'+(s===curStage?' on':'')+'" onclick="pickStage(\''+curSeg+'\','+i+')">'+esc(s.label)+'</button>'});
+  h+='</div>';
+  const s=curStage;
+  h+='<div class="card"><h3>🌟 发育里程碑</h3><p>'+esc(s.mile)+'</p></div>';
+  h+='<div class="card"><h3>🍚 喂养</h3><p>'+esc(s.feed)+'</p></div>';
+  h+='<div class="card"><h3>😴 睡眠</h3><p>'+esc(s.sleep)+'</p></div>';
+  h+='<div class="card"><h3>🩺 保健与注意</h3><p>'+esc(s.care)+'</p></div>';
+  h+=dadCard(s.dad,'bs'+s.range[0],'');
+  el.innerHTML=h;
+}
+function pickStage(seg,i){curStage=BABY.filter(s=>s.seg===seg)[i];renderBaby()}
+
+// ===== 疫苗tab =====
+function renderVax(){
+  const done=lsGet('yb_vax',[]);
+  const m=(profile&&profile.mode==='born')?ageMonths():-1;
+  let h='';
+  VAX.forEach(g=>{
+    const due=m>=0&&m>=g.m&&g.list.some(v=>!done.includes(g.age+v));
+    h+='<div class="vax-group"><div class="vax-age">'+esc(g.age)+(due?' <span class="tag amber">到期未种</span>':'')+'</div><div class="card" style="margin-bottom:4px">';
+    g.list.forEach(v=>{
+      const k=g.age+v, on=done.includes(k);
+      h+='<label class="ck'+(on?' done':'')+'"><input type="checkbox" '+(on?'checked':'')+' onchange="vaxToggle(\''+esc(k)+'\')"><span>'+esc(v)+'</span></label>';
+    });
+    h+='</div></div>';
+  });
+  h+='<div class="dad-inline" style="margin-top:12px"><b>👨 爸爸任务：</b><ul><li>疫苗本由你保管，接种由你预约和陪同</li><li>接种后留观30分钟，当天多喂水、观察体温</li><li>自费疫苗（13价肺炎、五联、轮状、手足口、流感等）主动做功课，和妻子商量安排</li></ul></div>';
+  document.getElementById('vax-list').innerHTML=h;
+}
+function vaxToggle(k){
+  let done=lsGet('yb_vax',[]);
+  done=done.includes(k)?done.filter(x=>x!==k):done.concat(k);
+  lsSet('yb_vax',done); renderVax(); renderHome();
+}
+
+// ===== 成长记录 =====
+function growthRef(m,sex){
+  let best=GROWTH[0];
+  for(const r of GROWTH){if(Math.abs(r[0]-m)<Math.abs(best[0]-m))best=r}
+  return sex==='boy'?{m:best[0],w:[best[1],best[2]],h:[best[3],best[4]]}:{m:best[0],w:[best[5],best[6]],h:[best[7],best[8]]};
+}
+function renderRec(){
+  const refEl=document.getElementById('rec-ref');
+  if(profile&&profile.mode==='born'&&ageMonths()>=0&&ageMonths()<73){
+    const r=growthRef(ageMonths(),profile.sex);
+    refEl.innerHTML='宝宝当前约 <b>'+ageText()+'</b>（参考'+r.m+'月龄，WHO标准）<br>身高正常范围：<b>'+r.h[0]+' - '+r.h[1]+' cm</b><br>体重正常范围：<b>'+r.w[0]+' - '+r.w[1]+' kg</b><br><span style="font-size:11.5px">超出范围不代表异常，请结合生长曲线趋势由儿保医生评估。</span>';
+  }else refEl.innerHTML='宝宝出生后，这里会显示对应月龄的身高体重参考范围。';
+  const recs=lsGet('yb_recs',[]);
+  const listEl=document.getElementById('rec-list');
+  if(!recs.length){listEl.innerHTML='<div class="empty">还没有记录，添加第一条吧</div>';return}
+  let h='';
+  recs.slice().sort((a,b)=>b.d.localeCompare(a.d)).forEach((r,i)=>{
+    h+='<div class="rec-row"><div><b>'+esc(r.d)+'</b><div class="d">身高 '+r.h+' cm · 体重 '+r.w+' kg</div></div><button class="btn ghost" style="width:auto;margin:0" onclick="delRec(\''+esc(r.d)+'\')">删除</button></div>';
+  });
+  listEl.innerHTML=h;
+}
+function addRec(){
+  const d=document.getElementById('rec-date').value;
+  const h=parseFloat(document.getElementById('rec-h').value);
+  const w=parseFloat(document.getElementById('rec-w').value);
+  if(!d||(!h&&!w)){alert('请填写日期和至少一项数据');return}
+  const recs=lsGet('yb_recs',[]).filter(r=>r.d!==d);
+  recs.push({d:d,h:h||'-',w:w||'-'});
+  lsSet('yb_recs',recs);
+  document.getElementById('rec-h').value='';document.getElementById('rec-w').value='';
+  renderRec();
+}
+function delRec(d){lsSet('yb_recs',lsGet('yb_recs',[]).filter(r=>r.d!==d));renderRec()}
+
+// ===== 导航 =====
+document.getElementById('nav').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+b.dataset.v).classList.add('active');
+  document.querySelector('main').scrollTop=0; window.scrollTo(0,0);
+});
+document.getElementById('preg-seg').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  document.querySelectorAll('#preg-seg button').forEach(x=>x.classList.toggle('on',x===b));
+  ['week','checkup','bag'].forEach(p=>document.getElementById('preg-'+p).classList.toggle('hidden',p!==b.dataset.p));
+});
+document.getElementById('baby-seg').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  document.querySelectorAll('#baby-seg button').forEach(x=>x.classList.toggle('on',x===b));
+  curSeg=b.dataset.b; curStage=null; renderBaby();
+});
+
+// ===== 引导页 =====
+let obMode=null;
+function obPick(m){
+  obMode=m;
+  document.getElementById('ob-preg').classList.toggle('on',m==='preg');
+  document.getElementById('ob-born').classList.toggle('on',m==='born');
+  document.getElementById('ob-form-preg').classList.toggle('hidden',m!=='preg');
+  document.getElementById('ob-form-born').classList.toggle('hidden',m!=='born');
+}
+function obSave(){
+  if(!obMode){alert('请先选择当前阶段');return}
+  if(obMode==='preg'){
+    const due=document.getElementById('ob-due').value;
+    if(!due){alert('请填写预产期');return}
+    profile={mode:'preg',due:due};
+  }else{
+    const birth=document.getElementById('ob-birth').value;
+    if(!birth){alert('请填写宝宝生日');return}
+    profile={mode:'born',birth:birth,sex:document.getElementById('ob-sex').value};
+  }
+  lsSet('yb_profile',profile);
+  document.getElementById('onboard').classList.add('hidden');
+  curWeek=null; curStage=null;
+  renderAll();
+}
+function openOnboard(){
+  if(profile){
+    obPick(profile.mode);
+    if(profile.mode==='preg')document.getElementById('ob-due').value=profile.due;
+    else{document.getElementById('ob-birth').value=profile.birth;document.getElementById('ob-sex').value=profile.sex}
+  }
+  document.getElementById('onboard').classList.remove('hidden');
+}
+
+// ===== 启动 =====
+function renderAll(){renderHome();renderPregWeek();renderCheckups();renderBag();renderBaby();renderVax();renderRec()}
+document.getElementById('rec-date').value=new Date().toISOString().slice(0,10);
+if(!profile){document.getElementById('onboard').classList.remove('hidden')}
+renderAll();
+</script>
+</body>
+</html>
